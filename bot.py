@@ -6,22 +6,21 @@ A simple bot for fun and moderation.
 __author__ = "RobiPoire"
 
 import asyncio
+import json
 import logging
 import os
+from logging.config import fileConfig
 
 import discord
 import yaml
 from discord.ext import commands
 
-# Configurer le logging
-logging.basicConfig(filename='bot.log', level=logging.DEBUG,
-                    format='%(asctime)s:%(levelname)s:%(message)s')
-# afficher les logs dans la console
-console = logging.StreamHandler()
-console.setLevel(logging.DEBUG)
-formatter = logging.Formatter('%(asctime)s:%(levelname)s:%(message)s')
-console.setFormatter(formatter)
-logging.getLogger('').addHandler(console)
+# Load the logging configuration
+with open("./database/logging_config.json", "r") as f:
+    logging_config = json.load(f)
+
+# Apply the configuration
+logging.config.dictConfig(logging_config)
 
 
 class Bot(commands.Bot):
@@ -36,7 +35,7 @@ class Bot(commands.Bot):
 
     async def sync(self) -> None:
         self.tree.copy_global_to(guild=discord.Object(self.config["SERVER_OWNER"]))
-        await self.tree.sync(guild=discord.Object(self.config["SERVER_OWNER"]))
+        # self.tree.sync(guild=discord.Object(self.config["SERVER_OWNER"]))
 
     async def load(self):
         for file in os.listdir("./commands"):
